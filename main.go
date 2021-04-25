@@ -6,8 +6,14 @@ import (
 	"net/http"
 )
 
+type requestResult struct {
+	url    string
+	status string
+}
+
 func main() {
-	var results = make(map[string]string)
+	results := make(map[string]string)
+	c := make(chan requestResult)
 
 	urls := []string{
 		"https://www.airbnb.com",
@@ -18,34 +24,33 @@ func main() {
 		"https://www.instagram.com",
 	}
 
-	results["hello"] = "hi"
-
 	for _, url := range urls {
-		result := "OK"
-		err := hitUrl(url)
-		if err != nil {
-			result = "FAIL"
-		}
-		results[url] = result
+		go hitUrl(url, c)
 	}
 
-	for url, result := range results {
-		fmt.Println(url, result)
+	for i := 0; i < len(urls); i++ {
+		result := <-c
+		results[result.url] = result.status
+	}
+
+	for url, status := range results {
+		fmt.Println(url, status)
 	}
 
 }
 
 var errRequestFailed = errors.New("request failed")
 
-func hitUrl(url string) error {
+func hitUrl(url string, c chan requestResult) {
 
 	fmt.Println("checking : ", url)
 
 	resp, err := http.Get(url)
 
+	status := "OK"
 	if err != nil || resp.StatusCode >= 400 {
-		return errRequestFailed
+		status = "FAILED"
 	}
 
-	return nil
+	c <- requestResult{url: url, status: status}
 }
