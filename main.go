@@ -1,43 +1,51 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/nakh76/learngo/mydict"
+	"net/http"
 )
 
 func main() {
-	// account := accounts.NewAccount("nakh")
-	// account.Deposit(10)
-	// err := account.Withdraw((20))
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(account)
+	var results = make(map[string]string)
 
-	dictionary := mydict.Dictionary{}
-	word := "hello"
-	// definition := "Greeting"
-	// err := dictionary.Add(word, definition)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// greeting, _ := dictionary.Search(word)
-	// fmt.Println(greeting)
-
-	// err2 := dictionary.Add(word, definition)
-	// if err2 != nil {
-	// 	fmt.Println(err2)
-	// }
-
-	dictionary.Add(word, "First")
-	greeting, _ := dictionary.Search(word)
-	fmt.Println(greeting)
-
-	err := dictionary.Delete("saaa")
-	if err != nil {
-		fmt.Println(err)
+	urls := []string{
+		"https://www.airbnb.com",
+		"https://www.google.com",
+		"https://www.amazon.com",
+		"https://www.raddit.com",
+		"https://www.facebook.com",
+		"https://www.instagram.com",
 	}
-	greeting2, _ := dictionary.Search(word)
-	fmt.Println(greeting2)
+
+	results["hello"] = "hi"
+
+	for _, url := range urls {
+		result := "OK"
+		err := hitUrl(url)
+		if err != nil {
+			result = "FAIL"
+		}
+		results[url] = result
+	}
+
+	for url, result := range results {
+		fmt.Println(url, result)
+	}
+
+}
+
+var errRequestFailed = errors.New("request failed")
+
+func hitUrl(url string) error {
+
+	fmt.Println("checking : ", url)
+
+	resp, err := http.Get(url)
+
+	if err != nil || resp.StatusCode >= 400 {
+		return errRequestFailed
+	}
+
+	return nil
 }
