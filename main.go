@@ -15,9 +15,29 @@ func main() {
 	// }
 	// fmt.Println(account)
 
-	dictionary := mydict.Dictionary{"first": "First word"}
-	dictionary["hello"] = "hello"
+	dictionary := mydict.Dictionary{}
+	word := "hello"
+	// definition := "Greeting"
+	// err := dictionary.Add(word, definition)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// greeting, _ := dictionary.Search(word)
+	// fmt.Println(greeting)
 
-	fmt.Println(dictionary)
+	// err2 := dictionary.Add(word, definition)
+	// if err2 != nil {
+	// 	fmt.Println(err2)
+	// }
 
+	dictionary.Add(word, "First")
+	greeting, _ := dictionary.Search(word)
+	fmt.Println(greeting)
+
+	err := dictionary.Delete("saaa")
+	if err != nil {
+		fmt.Println(err)
+	}
+	greeting2, _ := dictionary.Search(word)
+	fmt.Println(greeting2)
 }
